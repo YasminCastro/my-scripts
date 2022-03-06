@@ -3,6 +3,7 @@ import fs from "fs";
 import csv from "csvtojson";
 import moment from "moment";
 import Papa from "papaparse";
+import getCategory from "./utils/getCategory";
 
 export default async function handler(
   req: NextApiRequest,
@@ -27,12 +28,14 @@ export default async function handler(
   const filesParsed = jsonData.map(function (row) {
     const date = moment(row.date, "YYYY-MM-DD").format("DD/MM/YYYY");
 
+    const { category, subcategory } = getCategory(row);
+
     return {
       title: row.title,
       amount: row.amount,
       date: date,
-      category: "",
-      subcategory: "",
+      category: category,
+      subcategory: subcategory,
       bank: "nubank",
       bank2: "nubank",
     };
@@ -44,6 +47,9 @@ export default async function handler(
 
   //salvar arquivo
 
-  fs.writeFileSync("nubankFormatado.csv", file);
+  fs.writeFileSync(
+    "D:/Users/Yasmin/Documentos/Code/scripts/pages/api/nubank-to-financas/files/fileDone/nubankFormatado.csv",
+    file
+  );
   res.status(200).json("Done!");
 }
